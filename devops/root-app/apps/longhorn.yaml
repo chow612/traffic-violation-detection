@@ -10,7 +10,6 @@ spec:
       chart: longhorn
       targetRevision: 1.12.1
       helm:
-        releaseName: longhorn
         valueFiles:
           - $values/devops/infrastructure/longhorn/values.yaml
     - repoURL: git@github.com:chow612/traffic-violation-detection.git

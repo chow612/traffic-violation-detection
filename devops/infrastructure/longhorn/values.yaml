@@ -1,2 +1,14 @@
 preUpgradeChecker:
   jobEnabled: false
+
+defaultSettings:
+  priorityClass: longhorn-critical
+  disableRevisionCounter: '{"v1":"true"}'
+
+persistence:
+  defaultClass: true
+  defaultClassReplicaCount: 3
+  defaultDataLocality: disabled
+  dataEngine: v1
+  defaultFsType: ext4
+  backupTargetName: default
