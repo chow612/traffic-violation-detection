@@ -19,3 +19,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: infisical
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: infisical-infisical-standalone-infisical
+      jsonPointers:
+        - /spec/template/metadata/annotations/updatedAt
