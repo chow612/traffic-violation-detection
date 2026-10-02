@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: argocd
+spec:
+  project: foundation
+  source:
+    repoURL: git@github.com:chow612/traffic-violation-detection.git
+    targetRevision: main
+    path: devops/infrastructure/databases/redis
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: databases

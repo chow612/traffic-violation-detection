@@ -1,0 +1,19 @@
+infisical:
+  kubeSecretRef: infisical-secrets
+  replicaCount: 1
+  image:
+    repository: infisical/infisical
+    tag: v0.158.0
+  resources:
+    requests:
+      cpu: 350m
+    limits:
+      memory: 1000Mi
+ingress:
+  enabled: false
+  nginx:
+    enabled: false
+postgresql:
+  enabled: false
+redis:
+  enabled: false
