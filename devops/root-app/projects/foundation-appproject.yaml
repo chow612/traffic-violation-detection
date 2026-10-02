@@ -7,6 +7,8 @@ spec:
   description: Traffic Violation Detection - foundation workloads
   sourceRepos:
     - 'git@github.com:chow612/traffic-violation-detection.git'
+    - 'https://helm.cilium.io/'
+    - 'https://charts.longhorn.io/'
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
