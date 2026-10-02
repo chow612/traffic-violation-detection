@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+spec:
+  project: foundation
+  sources:
+    - repoURL: https://helm.cilium.io/
+      chart: cilium
+      targetRevision: 1.20.0
+      helm:
+        releaseName: cilium
+        valueFiles:
+          - $values/devops/infrastructure/cilium/values.yaml
+    - repoURL: git@github.com:chow612/traffic-violation-detection.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
