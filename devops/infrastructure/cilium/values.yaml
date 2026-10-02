@@ -1,3 +1,5 @@
+nonIdempotentAnnotations:
+  argocd.argoproj.io/compare-options: IgnoreExtraneous
 cluster:
   name: default
 ipam:
