@@ -24,4 +24,5 @@ spec:
       kind: Deployment
       name: infisical-infisical-standalone-infisical
       jsonPointers:
+        - /metadata/annotations/updatedAt
         - /spec/template/metadata/annotations/updatedAt
