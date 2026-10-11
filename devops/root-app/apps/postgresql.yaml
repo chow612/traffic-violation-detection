@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: git@github.com:chow612/traffic-violation-detection.git
     targetRevision: main
-    path: devops/root-app/apps/postgresql
+    path: devops/infrastructure/databases/postgresql
   destination:
     server: https://kubernetes.default.svc
     namespace: databases
