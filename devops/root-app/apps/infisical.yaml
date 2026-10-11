@@ -26,3 +26,6 @@ spec:
       jsonPointers:
         - /metadata/annotations/updatedAt
         - /spec/template/metadata/annotations/updatedAt
+  syncPolicy:
+    syncOptions:
+      - RespectIgnoreDifferences=true
