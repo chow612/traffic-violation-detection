@@ -47,3 +47,11 @@ chunksCache:
   enabled: false
 resultsCache:
   enabled: false
+
+# Chế độ SimpleScalable không dùng: replicas phải về 0, nếu không chart từ chối render
+write:
+  replicas: 0
+read:
+  replicas: 0
+backend:
+  replicas: 0
