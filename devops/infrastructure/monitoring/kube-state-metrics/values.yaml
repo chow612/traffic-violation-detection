@@ -1,0 +1,14 @@
+replicas: 1
+
+prometheus:
+  monitor:
+    enabled: false
+selfMonitor:
+  enabled: false
+
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    memory: 256Mi

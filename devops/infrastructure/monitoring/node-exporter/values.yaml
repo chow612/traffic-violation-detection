@@ -1,0 +1,11 @@
+# Alloy scrape node-exporter qua annotation prometheus.io/scrape, không dùng ServiceMonitor.
+prometheus:
+  monitor:
+    enabled: false
+
+resources:
+  requests:
+    cpu: 20m
+    memory: 32Mi
+  limits:
+    memory: 128Mi
