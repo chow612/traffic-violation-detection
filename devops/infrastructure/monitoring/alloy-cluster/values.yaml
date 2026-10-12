@@ -1,0 +1,47 @@
+# Alloy scrape các target cấp cluster (không theo node) rồi remote-write vào Prometheus.
+controller:
+  type: deployment
+  replicas: 1
+
+alloy:
+  enableReporting: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+  configMap:
+    content: |
+      prometheus.remote_write "default" {
+        endpoint {
+          url = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
+        }
+      }
+
+      prometheus.scrape "kube_state_metrics" {
+        job_name        = "kube-state-metrics"
+        scrape_interval = "30s"
+        targets         = [{"__address__" = "kube-state-metrics.monitoring.svc.cluster.local:8080"}]
+        forward_to      = [prometheus.remote_write.default.receiver]
+      }
+
+      prometheus.scrape "longhorn" {
+        job_name        = "longhorn"
+        scrape_interval = "30s"
+        targets         = [{"__address__" = "longhorn-backend.longhorn-system.svc.cluster.local:9500"}]
+        forward_to      = [prometheus.remote_write.default.receiver]
+      }
+
+      prometheus.scrape "argocd" {
+        job_name        = "argocd"
+        scrape_interval = "30s"
+        targets = [
+          {"__address__" = "argocd-metrics.argocd.svc.cluster.local:8082", "component" = "application-controller"},
+          {"__address__" = "argocd-server-metrics.argocd.svc.cluster.local:8083", "component" = "server"},
+          {"__address__" = "argocd-repo-server.argocd.svc.cluster.local:8084", "component" = "repo-server"},
+          {"__address__" = "argocd-applicationset-controller.argocd.svc.cluster.local:8080", "component" = "applicationset-controller"},
+          {"__address__" = "argocd-notifications-controller-metrics.argocd.svc.cluster.local:9001", "component" = "notifications-controller"},
+        ]
+        forward_to = [prometheus.remote_write.default.receiver]
+      }
