@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: loki
+  namespace: argocd
+spec:
+  project: foundation
+  sources:
+    - repoURL: https://grafana-community.github.io/helm-charts
+      chart: loki
+      targetRevision: 18.15.1
+      helm:
+        valueFiles:
+          - $values/devops/infrastructure/monitoring/loki/values.yaml
+    - repoURL: git@github.com:chow612/traffic-violation-detection.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
