@@ -9,6 +9,10 @@ spec:
     - 'git@github.com:chow612/traffic-violation-detection.git'
     - 'https://helm.cilium.io/'
     - 'https://charts.longhorn.io/'
+    - 'https://dl.cloudsmith.io/public/infisical/helm-charts/helm/charts/'
+    - 'https://prometheus-community.github.io/helm-charts'
+    - 'https://grafana-community.github.io/helm-charts'
+    - 'https://grafana.github.io/helm-charts'
   destinations:
     - namespace: '*'
       server: https://kubernetes.default.svc
