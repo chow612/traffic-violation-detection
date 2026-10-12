@@ -1,3 +1,4 @@
+# Prometheus chỉ lưu + query. Alloy scrape rồi remote-write vào đây.
 alertmanager:
   enabled: false
 prometheus-pushgateway:
@@ -23,9 +24,23 @@ server:
       memory: 256Mi
     limits:
       memory: 1Gi
-serverFiles:
-  prometheus.yml:
-    scrape_configs:
-      - job_name: prometheus
-        static_configs:
-          - targets: ['localhost:9090']
+
+scrapeConfigs:
+  kubernetes-api-servers:
+    enabled: false
+  kubernetes-nodes:
+    enabled: false
+  kubernetes-nodes-cadvisor:
+    enabled: false
+  kubernetes-pods:
+    enabled: false
+  kubernetes-pods-slow:
+    enabled: false
+  kubernetes-service-endpoints:
+    enabled: false
+  kubernetes-service-endpoints-slow:
+    enabled: false
+  kubernetes-services:
+    enabled: false
+  prometheus-pushgateway:
+    enabled: false
