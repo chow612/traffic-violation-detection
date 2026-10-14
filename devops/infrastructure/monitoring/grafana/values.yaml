@@ -1,0 +1,31 @@
+# Admin credential nằm trong Secret grafana-admin (tạo tay bằng kubectl, không commit vào Git)
+admin:
+  existingSecret: grafana-admin
+
+persistence:
+  enabled: true
+  storageClassName: local-path
+  size: 1Gi
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 512Mi
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        uid: prometheus
+        access: proxy
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        isDefault: true
+      - name: Loki
+        type: loki
+        uid: loki
+        access: proxy
+        url: http://loki.monitoring.svc.cluster.local:3100
