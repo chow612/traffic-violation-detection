@@ -26,10 +26,35 @@ alloy:
         forward_to      = [prometheus.remote_write.default.receiver]
       }
 
+      // Longhorn: scrape từng pod manager (qua Service sẽ chỉ rơi ngẫu nhiên vào 1 trong 3)
+      discovery.kubernetes "longhorn" {
+        role = "pod"
+        namespaces {
+          names = ["longhorn-system"]
+        }
+        selectors {
+          role  = "pod"
+          label = "app=longhorn-manager"
+        }
+      }
+
+      discovery.relabel "longhorn" {
+        targets = discovery.kubernetes.longhorn.targets
+        rule {
+          source_labels = ["__meta_kubernetes_pod_ip"]
+          replacement   = "$1:9500"
+          target_label  = "__address__"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_node_name"]
+          target_label  = "node"
+        }
+      }
+
       prometheus.scrape "longhorn" {
         job_name        = "longhorn"
         scrape_interval = "30s"
-        targets         = [{"__address__" = "longhorn-backend.longhorn-system.svc.cluster.local:9500"}]
+        targets         = discovery.relabel.longhorn.output
         forward_to      = [prometheus.remote_write.default.receiver]
       }
 
