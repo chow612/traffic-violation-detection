@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy-node-rbac
+  namespace: argocd
+spec:
+  project: foundation
+  source:
+    repoURL: git@github.com:chow612/traffic-violation-detection.git
+    targetRevision: main
+    path: devops/infrastructure/monitoring/alloy-node-rbac
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring

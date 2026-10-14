@@ -1,0 +1,98 @@
+# Alloy chạy trên mỗi node: log pod (qua API server) + node-exporter + cAdvisor của node đó.
+controller:
+  type: daemonset
+
+alloy:
+  enableReporting: false
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 384Mi
+  extraEnv:
+    - name: NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: HOST_IP
+      valueFrom:
+        fieldRef:
+          fieldPath: status.hostIP
+  configMap:
+    content: |
+      prometheus.remote_write "default" {
+        endpoint {
+          url = "http://prometheus-server.monitoring.svc.cluster.local/api/v1/write"
+        }
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        }
+      }
+
+      // node-exporter dùng hostNetwork nên gọi qua IP của chính node này
+      prometheus.scrape "node_exporter" {
+        job_name        = "node-exporter"
+        scrape_interval = "30s"
+        targets         = [{"__address__" = sys.env("HOST_IP") + ":9100", "node" = sys.env("NODE_NAME")}]
+        forward_to      = [prometheus.remote_write.default.receiver]
+      }
+
+      // cAdvisor của kubelet (CPU/RAM theo container), cần quyền nodes/metrics
+      prometheus.scrape "cadvisor" {
+        job_name        = "kubelet-cadvisor"
+        scrape_interval = "30s"
+        scheme          = "https"
+        metrics_path    = "/metrics/cadvisor"
+        targets         = [{"__address__" = sys.env("HOST_IP") + ":10250", "node" = sys.env("NODE_NAME")}]
+        authorization {
+          type             = "Bearer"
+          credentials_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+        }
+        tls_config {
+          insecure_skip_verify = true
+        }
+        forward_to = [prometheus.remote_write.default.receiver]
+      }
+
+      // Log: chỉ pod nằm trên node này và thuộc các namespace đã chọn
+      discovery.kubernetes "pods" {
+        role = "pod"
+        selectors {
+          role  = "pod"
+          field = "spec.nodeName=" + sys.env("NODE_NAME")
+        }
+      }
+
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pods.targets
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          regex         = "detector|streaming|infisical|argocd|databases"
+          action        = "keep"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_namespace"]
+          target_label  = "namespace"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          target_label  = "pod"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_container_name"]
+          target_label  = "container"
+        }
+        rule {
+          source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+          target_label  = "app"
+        }
+      }
+
+      loki.source.kubernetes "pods" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.default.receiver]
+      }
