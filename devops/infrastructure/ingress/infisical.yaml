@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: infisical
+  namespace: infisical
+  annotations:
+    cert-manager.io/cluster-issuer: traffic-ca
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - infisical.local
+      secretName: infisical-tls
+  rules:
+    - host: infisical.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: infisical-infisical-standalone-infisical
+                port:
+                  number: 8080
