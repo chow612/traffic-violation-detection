@@ -29,3 +29,18 @@ datasources:
         uid: loki
         access: proxy
         url: http://loki.monitoring.svc.cluster.local:3100
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    cert-manager.io/cluster-issuer: traffic-ca
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+  hosts:
+    - grafana.local
+  path: /
+  pathType: Prefix
+  tls:
+    - secretName: grafana-tls
+      hosts:
+        - grafana.local
