@@ -1,0 +1,4 @@
+# CRD mặc định tắt trong chart này, phải bật; keep để gỡ chart không làm mất Certificate/Issuer
+crds:
+  enabled: true
+  keep: true
